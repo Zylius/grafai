@@ -57,6 +57,11 @@ public class Map implements IMap{
 		
 	}
 
+    public Point[] getPoints()
+    {
+        return points;
+    }
+
 	@Override
 	public void generateTree(int point) {
 		startingPoint = point;
