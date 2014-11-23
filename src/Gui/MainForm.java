@@ -7,6 +7,7 @@ import Classes.ShortestEdgeMap;
 import Intefaces.IMap;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -24,7 +25,7 @@ public class MainForm extends JFrame{
     private IMap map = new Classes.Map();
 
     public MainForm(){
-        super("Grafai main");
+        super("Grafai");
 
         setContentPane(MainPanel);
         pack();
@@ -64,8 +65,9 @@ public class MainForm extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
 
-
                 final GenerateForm generateForm = new GenerateForm();
+                Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+                generateForm.setLocation((int)((screen.getWidth() - generateForm.getWidth()) / 2), (int)((screen.getHeight() - generateForm.getHeight()) / 2));
                 generateForm.generateButton.addActionListener(new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -106,5 +108,9 @@ public class MainForm extends JFrame{
 
     public void ReadFromFile(){
 
+    }
+
+    public void addGraph(OpenGL canvas){
+        MainPanel.add(canvas, BorderLayout.CENTER);
     }
 }

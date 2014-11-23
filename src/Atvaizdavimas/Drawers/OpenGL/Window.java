@@ -16,7 +16,7 @@ public class Window {
         Frame.setTitle("Grafai");
         Frame.setLayout(new BorderLayout());
         Frame.add(canvas, BorderLayout.CENTER);
-        Frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        //Frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Frame.pack();
         Frame.setVisible(true);
     }
