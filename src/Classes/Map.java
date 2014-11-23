@@ -138,9 +138,6 @@ public class Map implements IMap{
 
 	@Override
 	public List<Edge> returnTree() {
-		for(int i = 0; i < tree.size(); i++){
-			System.out.println(tree.get(i).toString());
-		}
 		return tree;
 	}
 
