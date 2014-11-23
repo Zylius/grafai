@@ -1,8 +1,11 @@
 package Classes;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Scanner;
 
 import Intefaces.IMap;
 
@@ -62,10 +65,57 @@ public class Map implements IMap{
 	}
 
 	@Override
-	public void readFromFile() {
+	public void readFromFile(File file) {
 		// TODO Auto-generated method stub
+        try {
+            Scanner fileScanner = new Scanner(file);
+            Scanner fileScanner2 = new Scanner(file);
+            int pointNumber = 0;
+            while (fileScanner2.hasNext()) {
+                fileScanner2.nextLine();
+                pointNumber++;
+            }
+
+            int i = 0;
+            Point[] points = new Point[pointNumber];
+            while (fileScanner.hasNext()) {
+                String line = fileScanner.nextLine();
+                System.out.println(line);
+                int x, y, z;
+                String[] values = line.split(" ");
+                int[] connections = new int[values.length - 3];
+                x = Integer.parseInt(values[0]);
+                y = Integer.parseInt(values[1]);
+                z = Integer.parseInt(values[2]);
+                int k = 0;
+                for (int j = 3; j < values.length; j++) {
+                    connections[k] = Integer.parseInt(values[j]);
+                    k++;
+                }
+
+                points[i] = new Point(i, x, y, z, connections);
+                i++;
+            }
+
+            fileScanner.close();
+            fileScanner2.close();
+
+            this.points = points;
+        }
+        catch (Exception ex)
+        {
+            System.out.println("Problem with file data");
+            if(ex instanceof FileNotFoundException)
+                System.out.println("File not found");
+            if(ex instanceof NumberFormatException)
+                System.out.println("Wrong file data");
+        }
 		
 	}
+
+    public void setPoints(Point[] points) {
+        this.points = points;
+    }
 
     public Point[] getPoints()
     {

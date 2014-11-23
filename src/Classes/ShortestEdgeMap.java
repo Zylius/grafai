@@ -2,6 +2,7 @@ package Classes;
 
 import Intefaces.IMap;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -68,7 +69,7 @@ public class ShortestEdgeMap implements IMap{
     }
 
     @Override
-    public void readFromFile() {
+    public void readFromFile(File file) {
 
     }
 

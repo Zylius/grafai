@@ -49,53 +49,12 @@ public class MainForm extends JFrame{
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
-                    try{
-                        Scanner fileScanner = new Scanner(file);
-                        Scanner fileScanner2 = new Scanner(file);
-                        int pointNumber = 0;
-                        while (fileScanner2.hasNext()){
-                            fileScanner2.nextLine();
-                            pointNumber++;
-                        }
 
-                        int i = 0;
-                        Point[] points = new Point[pointNumber];
-                        while (fileScanner.hasNext()){
-                            String line = fileScanner.nextLine();
-                            System.out.println(line);
-                            int x, y ,z;
-                            String[] values = line.split(" ");
-                            int[] connections = new int[values.length-3];
-                            x = Integer.parseInt(values[0]);
-                            y = Integer.parseInt(values[1]);
-                            z = Integer.parseInt(values[2]);
-                            int k = 0;
-                            for (int j = 3; j < values.length; j++)
-                            {
-                                connections[k] = Integer.parseInt(values[j]);
-                                k++;
-                            }
+                    map.readFromFile(file);
+                    map.generateTree(0);
+                    map.returnTree();
 
-                            points[i] = new Point(i, x, y, z, connections);
-                            i++;
-                        }
-
-                        //map.generateTree(0);
-                        //map.returnTree();
-
-                        fileScanner.close();
-
-                        drawButton.setEnabled(true);
-                    }
-                    catch(Exception ex)
-                    {
-                        System.out.println("Problem with file data");
-                        if(ex instanceof FileNotFoundException)
-                            System.out.println("File not found");
-                        if(ex instanceof NumberFormatException)
-                            System.out.println("Wrong file data");
-                    }
-
+                    drawButton.setEnabled(true);
                 }
             }
         });
