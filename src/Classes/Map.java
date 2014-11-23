@@ -87,16 +87,25 @@ public class Map implements IMap{
         return  returnValue;
     }
 
+    private void putEdges(PriorityQueue q, Point point){
+        Point tmp;
+        double edgeLength;
+        int c[] = point.getConnection();
+        for(int i = 0; i < c.length; i++){
+            tmp = points[c[i]];
+            if(tmp.getFrom() == -1) {
+                edgeLength = countDistance( point, tmp);
+                q.add(new Edge( point, tmp, edgeLength));
+            }
+        }
+    }
+
 	@Override
 	public void generateTree(int point) {
 		startingPoint = point;
 		Point current;
 		Point tmp;
         Edge currentEdge;
-		double distance;
-        double edgeLength;
-		int i;
-		int con[];
         PriorityQueue edges = new PriorityQueue<Edge>();
 
 		//queue = new LinkedList<Point>();
@@ -106,14 +115,7 @@ public class Map implements IMap{
 
 
         //edges.add(findShortestEdge(points[point]));
-        int c[] = points[point].getConnection();
-        for(i = 0; i < c.length; i++){
-            tmp = points[c[i]];
-            if(tmp.getFrom() == -1) {
-                edgeLength = countDistance( points[point], tmp);
-                edges.add(new Edge( points[point], tmp, edgeLength));
-            }
-        }
+        putEdges(edges,points[point]);
 
         while(!edges.isEmpty()){
             currentEdge = (Edge)edges.poll();
@@ -121,18 +123,11 @@ public class Map implements IMap{
             if(current.getFrom() != -1){
                 continue;
             }
-			con = current.getConnection();
-			for(i = 0; i < con.length; i++){
-				tmp = points[con[i]];
-                if(tmp.getFrom() == -1) {
-                    edgeLength = countDistance(current, tmp);
-                    edges.add(new Edge(current, tmp, edgeLength));
-                }
-			}
+            putEdges(edges,current);
             current.setFrom(currentEdge.getFirstPoint().getID());
             current.setDistance(currentEdge.getDistance());
 		}
-        //points[point].setFrom(0);
+
         for(int a = 0; a < points.length; a++){
             int index = points[a].getFrom();
             if (index >= 0) {
