@@ -2,6 +2,7 @@
 # User-specific stuff:
 .idea/tasks.xml
 .idea/dictionaries
+.idea/workspace.xml
 
 # Sensitive or high-churn files:
 # .idea/dataSources.ids
