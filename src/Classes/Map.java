@@ -117,7 +117,7 @@ public class Map implements IMap{
         //edges.add(findShortestEdge(points[point]));
         putEdges(edges,points[point]);
 
-        while(!edges.isEmpty()){
+        while(!edges.isEmpty() && tree.size() < points.length-1){
             currentEdge = (Edge)edges.poll();
             current = currentEdge.getSecondPoint();
             if(current.getFrom() != -1){

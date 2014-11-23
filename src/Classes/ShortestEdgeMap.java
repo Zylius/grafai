@@ -83,7 +83,7 @@ public class ShortestEdgeMap implements IMap{
         Edge current;
         boolean good;
         int counter = 0;
-        while(!edges.isEmpty()){ //&& counter < points.length-1){
+        while(!edges.isEmpty() && counter < points.length-1){
             good = false;
             current = (Edge)edges.poll();
             if(area[current.getFirstPoint().getID()] == null){
