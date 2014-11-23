@@ -14,6 +14,8 @@ import Atvaizdavimas.IDrawer;
 import Classes.*;
 import Classes.Point;
 import Intefaces.IMap;
+import com.jogamp.opengl.math.Matrix4;
+import com.jogamp.opengl.math.VectorUtil;
 import com.jogamp.opengl.util.FPSAnimator;
 
 @SuppressWarnings("serial")
@@ -29,7 +31,7 @@ public class OpenGL extends GLCanvas implements GLEventListener, IDrawer {
 
     public OpenGL()
     {
-        super(new GLCapabilities(null));
+        super(getCapabilites());
         setPreferredSize(new Dimension(1000, 1000));
         setSize(1000,1000);
         addGLEventListener(this);
@@ -41,6 +43,14 @@ public class OpenGL extends GLCanvas implements GLEventListener, IDrawer {
         animator.setUpdateFPSFrames(3, null);
 
         glu = new GLU();
+    }
+
+    private static GLCapabilities getCapabilites()
+    {
+        GLCapabilities caps = new GLCapabilities(null);
+        caps.setSampleBuffers(true);
+        caps.setNumSamples(4);
+        return caps;
     }
 
     @Override
@@ -75,43 +85,65 @@ public class OpenGL extends GLCanvas implements GLEventListener, IDrawer {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         setCamera(gl, glu);
 
-        float[] lightColorAmbient = {0.2f, 0.2f, 0.2f, 1f};
-        float[] lightColorSpecular = {1.f, 1.f, 0.f, 0f};
+        gl.glBegin(GL2.GL_LINES_ADJACENCY_ARB);
+        gl.glColor3f(1.0f, 0.0f, 0.0f);
+        for (Edge edge : this.map.returnTree()) {
+            this.drawLine(edge.getFirstPoint(), edge.getSecondPoint(), 0.1, 360);
+        }
+        gl.glEnd();
 
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, lightColorAmbient, 0);
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPECULAR, lightColorSpecular, 0);
-
-        gl.glEnable(GL2.GL_LIGHT1);
-        gl.glEnable(GL2.GL_LIGHTING);
-
-        float[] rgba = {1.f, 1.f, 1f};
-        gl.glMaterialfv(GL.GL_FRONT, GL2.GL_AMBIENT, rgba, 0);
-        gl.glMaterialfv(GL.GL_FRONT, GL2.GL_SPECULAR, rgba, 0);
-        gl.glMaterialf(GL.GL_FRONT, GL2.GL_SHININESS, 0.9f);
+        gl.glBegin(GL2.GL_LINES_ADJACENCY_ARB);
+        gl.glColor4f(0.0f, 1.0f, 0.0f, 0.3f);
+        for(Point point : this.map.getPoints()){
+            for(int anotherPointID : point.getConnection()) {
+                this.drawLine(point, this.map.getPoints()[anotherPointID], 0.05, 360);
+            }
+        }
+        gl.glEnd();
 
         for(Point point : this.map.getPoints()){
-            this.drawSphere(1.0f, new float[]{point.getX(), point.getY(), point.getZ()}, new float[]{1f, 0f, 0f});
+            this.drawSphere(0.1f, point, new float[]{1f, 1f, 1f});
         }
-
         gl.glFlush();
     }
 
-    private void drawSphere(float radius, float[] point, float[] color)
+    private void drawSphere(float radius, Point point, float[] color)
     {
+        gl.glPushMatrix();
         gl.glColor3fv(color, 0);
-        GLUquadric earth = glu.gluNewQuadric();
-        glu.gluQuadricDrawStyle(earth, GLU.GLU_FILL);
-        glu.gluQuadricNormals(earth, GLU.GLU_FLAT);
-        glu.gluQuadricOrientation(earth, GLU.GLU_OUTSIDE);
-        gl.glTranslated(point[0], point[1], point[2]);
-        glu.gluSphere(earth, radius, 100, 100);
-
-        glu.gluDeleteQuadric(earth);
+        GLUquadric sphere = glu.gluNewQuadric();
+        glu.gluQuadricDrawStyle(sphere, GLU.GLU_FILL);
+        glu.gluQuadricNormals(sphere, GLU.GLU_FLAT);
+        glu.gluQuadricOrientation(sphere, GLU.GLU_OUTSIDE);
+        gl.glTranslated(point.getX(), point.getY(), point.getZ());
+        glu.gluSphere(sphere, radius, 100, 100);
+        gl.glPopMatrix();
+        glu.gluDeleteQuadric(sphere);
     }
 
-    private void drawLine(float x1, float x2, float y1, float y2, float z1, float z2) {
-        gl.glVertex3f(x1, y1, z1);
-        gl.glVertex3f(x2, y2, z2);
+    private void drawLine(Point from, Point to, double width, int slices)
+    {
+        float d[] = new float[]{ to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ() };
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
+        gl.glPushMatrix();
+        GLUquadric line = glu.gluNewQuadric();
+        float z[] = new float[]{ 0, 0, 1 };
+        float angle = (float) Math.acos(dot(z, d) / Math.sqrt(dot(d, d) * dot(z, z)));
+        z = VectorUtil.crossVec3(new float[]{1.f, 1.f, 1.f}, z, d);
+        gl.glTranslated(from.getX(), from.getY(), from.getZ());
+        gl.glRotated(angle * 180 / Math.PI, z[0], z[1], z[2]);
+        glu.gluCylinder(line, width / 2, width / 2, Math.sqrt(dot(d, d)), slices, 1);
+        gl.glPopMatrix();
+        glu.gluDeleteQuadric(line);
+    }
+
+    private float dot(float[] a, float[] b)
+    {
+        float sum = 0;
+        for (int i = 0; i < a.length; i++) {
+            sum += a[i] * b[i];
+        }
+        return sum;
     }
 
     public void setMap(IMap map)
