@@ -1,5 +1,7 @@
 package Classes;
 
+import java.util.Comparator;
+
 public class Point {
 	private float x;
 	private float y;
@@ -20,6 +22,7 @@ public class Point {
 		this.from = -1;
 		this.inQueue = false;
 	}
+
 	public int getID() {
 		return ID;
 	}
@@ -53,4 +56,9 @@ public class Point {
 	public boolean isInQueue(){
 		return inQueue;
 	}
+
+    public String toString(){
+        return String.format("ID: %d", ID);
+    }
+
 }

@@ -1,17 +1,19 @@
 package Classes;
 
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
+import java.util.PriorityQueue;
 
 import Intefaces.IMap;
 
 public class Map implements IMap{
+
 	private Point[] points;
-	private Queue<Point> queue;
+    private List<Edge> tree;
 	private int startingPoint;
 	
 	public Map(){
-		
+        tree = new LinkedList<Edge>();
 	}
 	
 	public static double countDistance(Point a, Point b){
@@ -20,13 +22,21 @@ public class Map implements IMap{
 	}
 	
 	@Override
-	public void generateMap() {
-		final int dydis = 10;
-		//points = new Point[dydis];
+	public void generateMap(final int size) {
 		int z = 10;
 		int u = 5;
 		int i;
 		points = new Point[]{
+                new Point(0, 0, 0, 0, new int[]{ 1, 3 }),
+                new Point(1, 0, 0, 1, new int[]{ 2, 7}),
+                new Point(2, 0, 0, 2, new int[]{ 1, 3, 4}),
+                new Point(3, 0, 2, 2, new int[]{ 2, 1, 4, 6 }),
+                new Point(4, 0, 2, 3, new int[]{ 2, 3, 5 }),
+                new Point(5, 0, 3, 3, new int[]{ 3, 4, 6 }),
+                new Point(6, 0, 3, 1, new int[]{ 3, 5, 7 }),
+                new Point(7, 0, 1, 0, new int[]{ 1, 6 }),
+
+                /*
 				new Point(0, 0, 0, 0, new int[]{ 1, 3 }),
 				new Point(1, 0, 3, 0, new int[]{ 5, 2}),
 				new Point(2, 0, 5, 0, new int[]{ 5, 6, 7}),
@@ -35,7 +45,7 @@ public class Map implements IMap{
 				new Point(5, 0, 0, 3, new int[]{ 1, 2 }),
 				new Point(6, 0, 7, 3, new int[]{ 7, 2, 3 }),
 				new Point(7, 0, 9, 3, new int[]{ 8, 2, 6 }),
-				new Point(8, 0, 9, 7, new int[]{ 7 }),
+				new Point(8, 0, 9, 7, new int[]{ 7 }),*/
 				
 				/*new Point(3, 1, 1, 2, new int[]{7, 8}),
 				new Point(4, 1, 1, 2, new int[]{9}),
@@ -62,54 +72,90 @@ public class Map implements IMap{
         return points;
     }
 
+    private Edge findShortestEdge(Point point){
+        double distance = Double.MAX_VALUE;
+        double tmpDistance;
+        Edge returnValue = null;
+        int tmp[] = point.getConnection();
+        for(int i = 0; i < tmp.length; i++){
+            tmpDistance = countDistance(point,points[tmp[i]]);
+            if(tmpDistance < distance){
+                distance = tmpDistance;
+                returnValue = new Edge(point,points[tmp[i]],distance);
+            }
+        }
+        return  returnValue;
+    }
+
 	@Override
 	public void generateTree(int point) {
 		startingPoint = point;
 		Point current;
 		Point tmp;
+        Edge currentEdge;
 		double distance;
+        double edgeLength;
 		int i;
 		int con[];
-		queue = new LinkedList<Point>();
+        PriorityQueue edges = new PriorityQueue<Edge>();
+
+		//queue = new LinkedList<Point>();
 		points[point].setDistance(0);
-		queue.add(points[point]);
-		while(!queue.isEmpty()){
-			current = queue.poll();
+        points[point].setFrom(-2);
+		//queue.add(points[point]);
+
+
+        //edges.add(findShortestEdge(points[point]));
+        int c[] = points[point].getConnection();
+        for(i = 0; i < c.length; i++){
+            tmp = points[c[i]];
+            if(tmp.getFrom() == -1) {
+                edgeLength = countDistance( points[point], tmp);
+                edges.add(new Edge( points[point], tmp, edgeLength));
+            }
+        }
+
+        while(!edges.isEmpty()){
+            currentEdge = (Edge)edges.poll();
+            current = currentEdge.getSecondPoint();
+            if(current.getFrom() != -1){
+                continue;
+            }
 			con = current.getConnection();
 			for(i = 0; i < con.length; i++){
 				tmp = points[con[i]];
-				distance = current.getDistance()+countDistance(current, tmp);
-				if(distance < tmp.getDistance() ){
-					tmp.setDistance(distance);
-					tmp.setFrom(current.getID());
-					if(!tmp.isInQueue()){
-						tmp.setInQueue(true);
-						queue.add(tmp);
-					}
-				}
+                if(tmp.getFrom() == -1) {
+                    edgeLength = countDistance(current, tmp);
+                    edges.add(new Edge(current, tmp, edgeLength));
+                }
 			}
-			current.setInQueue(false);
+            current.setFrom(currentEdge.getFirstPoint().getID());
+            current.setDistance(currentEdge.getDistance());
 		}
+        //points[point].setFrom(0);
+        for(int a = 0; a < points.length; a++){
+            int index = points[a].getFrom();
+            if (index >= 0) {
+                tree.add(new Edge(points[a], points[index], points[a].getDistance()));
+            }
+        }
 	}
 
 	@Override
-	public String returnTree() {
-		String rez = "";
-		for(int i = 0; i < points.length; i++){
-			rez += "| From " + Integer.toString(points[i].getFrom()) + " to " + Integer.toString(points[i].getID()) + " | "; 
+	public List<Edge> returnTree() {
+		for(int i = 0; i < tree.size(); i++){
+			System.out.println(tree.get(i).toString());
 		}
-		return rez;
+		return tree;
 	}
 
 	@Override
 	public double TreeSize() {
-		double distance = -1;
-		for(int i = 0; i < points.length; i++){
-		//	if (distance < points[i].getDistance()){
-		//		distance = points[i].getDistance();
-		//	}
+        double weight = 0.d;
+        for(int i = 0; i < points.length; i++){
+            weight += points[i].getDistance();
 		}
-		return distance;
+		return weight;
 	}
 	
 }
