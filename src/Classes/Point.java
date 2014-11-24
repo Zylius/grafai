@@ -11,17 +11,26 @@ public class Point {
 	private int from;
 	private int[] connection;
 	private boolean inQueue;
-	
-	public Point(int ID, float x, float y, float z, int[] connection){
-		this.ID = ID;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.distance = Double.MAX_VALUE;
-		this.connection = connection;
-		this.from = -1;
-		this.inQueue = false;
-	}
+
+    public Point(int ID, float x, float y, float z, int[] connection){
+        this.ID = ID;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.distance = Double.MAX_VALUE;
+        this.connection = connection;
+        this.from = -1;
+        this.inQueue = false;
+    }
+    public Point(int ID, float x, float y, float z){
+        this.ID = ID;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.distance = Double.MAX_VALUE;
+        this.from = -1;
+        this.inQueue = false;
+    }
 
 	public int getID() {
 		return ID;
@@ -44,6 +53,7 @@ public class Point {
 	public int[] getConnection() {
 		return connection;
 	}
+    public void setConnection(int[] connections) {this.connection = connections;}
 	public void setInQueue(boolean inQueue) {
 		this.inQueue = inQueue;
 	}

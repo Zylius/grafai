@@ -3,9 +3,7 @@ package Classes;
 import Intefaces.IMap;
 
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * Created by Tautvydas on 2014-11-22.
@@ -49,21 +47,59 @@ public class ShortestEdgeMap implements IMap{
         }
     }
 
+    public Point generatePoint(float max, int ID){
+        float x, y, z;
+        int connections[], conNum;
+        boolean existing_connections[];
+        Random rand = new Random();
+        Point point;
+        x = rand.nextFloat()*max;
+        y = rand.nextFloat()*max;
+        z = rand.nextFloat()*max;
+        return new Point(ID, x, y, z);
+    }
+    public static boolean getRandomBoolean() {
+        //gets boolean 20%true 80%  false, rysiu generavimui
+        return Math.random() < 0.2;
+    }
+    public boolean[][] generateConnectionGrid(int size)
+    {
+        boolean[][] grid = new boolean[size][size];
+        for (int i = 0; i < size-1; i++)
+            for (int j = i+1; j < size; j++)
+            {
+                grid[i][j] = grid[j][i] =getRandomBoolean();
+                if (i+1 == j) {
+                    grid[i][j] = grid[j][i] = true;
+                }
+
+            }
+        return grid;
+    }
     @Override
     public void generateMap(final int size) {
         int z = 10;
         int u = 5;
-        int i;
-        points = new Point[]{
-                new Point(0, 0, 0, 0, new int[]{ 1, 3 }),
-                new Point(1, 0, 0, 1, new int[]{ 2, 7}),
-                new Point(2, 0, 0, 2, new int[]{ 1, 3, 4}),
-                new Point(3, 0, 2, 2, new int[]{ 2, 1, 4 }),
-                new Point(4, 0, 2, 3, new int[]{ 2, 3, 5 }),
-                new Point(5, 0, 3, 3, new int[]{ 3, 4, 6 }),
-                new Point(6, 0, 3, 1, new int[]{ 3, 5, 7 }),
-                new Point(7, 0, 1, 0, new int[]{ 1, 6 }),
-        };
+        float max = 100;
+        points = new Point[size];
+        boolean[][] connectionGrid = new boolean[size][size];
+        connectionGrid = generateConnectionGrid(size);
+        for (int i = 0; i < size; i++) {
+            int conNum = 0;
+            for (int j = 0; j < size; j++)
+                if (connectionGrid[i][j])
+                    conNum++;
+            int connections[] = new int[conNum];
+            int conNumTemp = 0;
+            for (int j = 0; j < size; j++)
+                if (connectionGrid[i][j]) {
+                    connections[conNumTemp] = j;
+                    conNumTemp++;
+                }
+
+            points[i] = generatePoint(max, i);
+            points[i].setConnection(connections);
+        }
         area = new IntObj[points.length];
         createAllEdges();
     }
