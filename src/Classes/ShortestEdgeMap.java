@@ -6,13 +6,12 @@ import java.io.File;
 import java.util.*;
 
 /**
- * Created by Tautvydas on 2014-11-22.
+ * Created by Zylius on 2014-11-22.
  */
-public class ShortestEdgeMap implements IMap{
-    private Point[] points;
+public class ShortestEdgeMap extends AbstractMap
+{
     private int startingPoint;
     private PriorityQueue edges;
-    private List<Edge> tree;
     private IntObj[] area;
 
     public ShortestEdgeMap(){
@@ -22,9 +21,6 @@ public class ShortestEdgeMap implements IMap{
 
     class IntObj {
         public int value;
-        IntObj(){
-            value = -1;
-        }
         IntObj(int val){
             value = val;
         }
@@ -76,43 +72,12 @@ public class ShortestEdgeMap implements IMap{
             }
         return grid;
     }
+
     @Override
     public void generateMap(final int size) {
-        int z = 10;
-        int u = 5;
-        float max = 100;
-        points = new Point[size];
-        boolean[][] connectionGrid = new boolean[size][size];
-        connectionGrid = generateConnectionGrid(size);
-        for (int i = 0; i < size; i++) {
-            int conNum = 0;
-            for (int j = 0; j < size; j++)
-                if (connectionGrid[i][j])
-                    conNum++;
-            int connections[] = new int[conNum];
-            int conNumTemp = 0;
-            for (int j = 0; j < size; j++)
-                if (connectionGrid[i][j]) {
-                    connections[conNumTemp] = j;
-                    conNumTemp++;
-                }
-
-            points[i] = generatePoint(max, i);
-            points[i].setConnection(connections);
-        }
+        super.generateMap(size);
         area = new IntObj[points.length];
         createAllEdges();
-    }
-
-    @Override
-    public void readFromFile(File file) {
-
-    }
-
-    private boolean canJoin(int pointA, int pointB){
-        if(area[pointA] == null || area[pointB] == null || area[pointA].value != area[pointB].value)
-            return true;
-        return false;
     }
 
     @Override
@@ -150,28 +115,6 @@ public class ShortestEdgeMap implements IMap{
             }
 
         }
-    }
-
-    @Override
-    public List<Edge> returnTree() {
-        for(int i = 0; i < tree.size(); i++){
-            System.out.println(tree.get(i).toString());
-        }
-        return tree;
-    }
-
-    @Override
-    public double TreeSize() {
-        double weight = 0.d;
-        for(int i = 0; i < tree.size(); i++){
-            weight += tree.get(i).getDistance();
-        }
-        return weight;
-    }
-
-    @Override
-    public Point[] getPoints() {
-        return new Point[0];
     }
 
 }

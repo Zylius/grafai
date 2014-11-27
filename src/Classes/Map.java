@@ -2,17 +2,13 @@ package Classes;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Scanner;
+import java.util.*;
 
 import Intefaces.IMap;
 
-public class Map implements IMap{
+public class Map extends AbstractMap
+{
 
-	private Point[] points;
-    private List<Edge> tree;
 	private int startingPoint;
 	
 	public Map(){
@@ -22,95 +18,6 @@ public class Map implements IMap{
 	public static double countDistance(Point a, Point b){
 		double distance = Math.sqrt(Math.pow(a.getX()-b.getX(),2) + Math.pow(a.getY()-b.getY(),2) + Math.pow(a.getZ()-b.getZ(),2));
 		return distance;
-	}
-	
-	@Override
-	public void generateMap(final int size) {
-		int z = 10;
-		int u = 5;
-		int i;
-		points = new Point[]{
-                new Point(0, 0, 0, 0, new int[]{ 1, 3 }),
-                new Point(1, 0, 0, 1, new int[]{ 2, 7}),
-                new Point(2, 0, 0, 2, new int[]{ 1, 3, 4}),
-                new Point(3, 0, 2, 2, new int[]{ 2, 1, 4, 6 }),
-                new Point(4, 0, 2, 3, new int[]{ 2, 3, 5 }),
-                new Point(5, 0, 3, 3, new int[]{ 3, 4, 6 }),
-                new Point(6, 0, 3, 1, new int[]{ 3, 5, 7 }),
-                new Point(7, 0, 1, 0, new int[]{ 1, 6 }),
-
-                /*
-				new Point(0, 0, 0, 0, new int[]{ 1, 3 }),
-				new Point(1, 0, 3, 0, new int[]{ 5, 2}),
-				new Point(2, 0, 5, 0, new int[]{ 5, 6, 7}),
-				new Point(3, 0, 5, 3, new int[]{ 0, 6, 4 }),
-				new Point(4, 0, 5, 5, new int[]{ 4 }),
-				new Point(5, 0, 0, 3, new int[]{ 1, 2 }),
-				new Point(6, 0, 7, 3, new int[]{ 7, 2, 3 }),
-				new Point(7, 0, 9, 3, new int[]{ 8, 2, 6 }),
-				new Point(8, 0, 9, 7, new int[]{ 7 }),*/
-				
-				/*new Point(3, 1, 1, 2, new int[]{7, 8}),
-				new Point(4, 1, 1, 2, new int[]{9}),
-				new Point(5, 1, 1, 2, new int[]{}),
-				new Point(6, 1, 1, 2, new int[]{}),
-				new Point(7, 1, 1, 2, new int[]{}),
-				new Point(8, 1, 1, 2, new int[]{}),
-				new Point(9, 1, 1, 2, new int[]{}),*/
-		};
-		/*
-		for(i = 0; i < dydis; i++){
-			points[i] = new Point(i,i,z*i/3,(u+z)/(i+0.1f), new int[]{(i+1)%dydis,(i+2)%dydis});
-		}*/
-	}
-
-	@Override
-	public void readFromFile(File file) {
-		// TODO Auto-generated method stub
-        try {
-            Scanner fileScanner = new Scanner(file);
-            Scanner fileScanner2 = new Scanner(file);
-            int pointNumber = 0;
-            while (fileScanner2.hasNext()) {
-                fileScanner2.nextLine();
-                pointNumber++;
-            }
-
-            int i = 0;
-            Point[] points = new Point[pointNumber];
-            while (fileScanner.hasNext()) {
-                String line = fileScanner.nextLine();
-                System.out.println(line);
-                int x, y, z;
-                String[] values = line.split(" ");
-                int[] connections = new int[values.length - 3];
-                x = Integer.parseInt(values[0]);
-                y = Integer.parseInt(values[1]);
-                z = Integer.parseInt(values[2]);
-                int k = 0;
-                for (int j = 3; j < values.length; j++) {
-                    connections[k] = Integer.parseInt(values[j]);
-                    k++;
-                }
-
-                points[i] = new Point(i, x, y, z, connections);
-                i++;
-            }
-
-            fileScanner.close();
-            fileScanner2.close();
-
-            this.points = points;
-        }
-        catch (Exception ex)
-        {
-            System.out.println("Problem with file data");
-            if(ex instanceof FileNotFoundException)
-                System.out.println("File not found");
-            if(ex instanceof NumberFormatException)
-                System.out.println("Wrong file data");
-        }
-		
 	}
 
     public void setPoints(Point[] points) {
@@ -185,19 +92,4 @@ public class Map implements IMap{
             }
         }
 	}
-
-	@Override
-	public List<Edge> returnTree() {
-		return tree;
-	}
-
-	@Override
-	public double TreeSize() {
-        double weight = 0.d;
-        for(int i = 0; i < points.length; i++){
-            weight += points[i].getDistance();
-		}
-		return weight;
-	}
-	
 }

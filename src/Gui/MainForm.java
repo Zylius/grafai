@@ -54,6 +54,7 @@ public class MainForm extends JFrame{
                     map.readFromFile(file);
                     map.generateTree(0);
                     map.returnTree();
+                    System.out.print(map);
 
                     drawButton.setEnabled(true);
                 }
@@ -78,16 +79,19 @@ public class MainForm extends JFrame{
 
                             System.out.println("Testas");
 
-                            map.generateMap(numPoints);
+                            /*map.generateMap(numPoints);
                             map.generateTree(0);
                             map.returnTree();
                             System.out.println(String.format("Medzio ilgis dijstra: %4.2f",map.TreeSize()));
+                            System.out.print(map);*/
 
                             IMap edgeMap = new ShortestEdgeMap();
                             edgeMap.generateMap(numPoints);
                             edgeMap.generateTree(0);
                             edgeMap.returnTree();
+                            map = edgeMap;
                             System.out.println(String.format("Medzio ilgis salinimas: %4.2f",edgeMap.TreeSize()));
+                            System.out.print(edgeMap);
 
                             drawButton.setEnabled(true);
 

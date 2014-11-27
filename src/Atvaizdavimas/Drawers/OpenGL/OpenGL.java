@@ -85,26 +85,27 @@ public class OpenGL extends GLCanvas implements GLEventListener, IDrawer {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         setCamera(gl, glu);
 
-        gl.glBegin(GL2.GL_LINES_ADJACENCY_ARB);
+
         gl.glColor3f(1.0f, 0.0f, 0.0f);
         for (Edge edge : this.map.returnTree()) {
             this.drawLine(edge.getFirstPoint(), edge.getSecondPoint(), 0.1, 360);
         }
-        gl.glEnd();
 
-        gl.glBegin(GL2.GL_LINES_ADJACENCY_ARB);
         gl.glColor4f(0.0f, 1.0f, 0.0f, 0.3f);
         for(Point point : this.map.getPoints()){
             for(int anotherPointID : point.getConnection()) {
                 this.drawLine(point, this.map.getPoints()[anotherPointID], 0.05, 360);
             }
         }
-        gl.glEnd();
 
         for(Point point : this.map.getPoints()){
             this.drawSphere(0.1f, point, new float[]{1f, 1f, 1f});
         }
+
+
         gl.glFlush();
+
+
     }
 
     private void drawSphere(float radius, Point point, float[] color)
@@ -124,7 +125,6 @@ public class OpenGL extends GLCanvas implements GLEventListener, IDrawer {
     private void drawLine(Point from, Point to, double width, int slices)
     {
         float d[] = new float[]{ to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ() };
-        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glPushMatrix();
         GLUquadric line = glu.gluNewQuadric();
         float z[] = new float[]{ 0, 0, 1 };
