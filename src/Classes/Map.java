@@ -74,7 +74,7 @@ public class Map extends AbstractMap
         //edges.add(findShortestEdge(points[point]));
         putEdges(edges,points[point]);
 
-        while(!edges.isEmpty()){// && tree.size() < points.length-1){
+        while(!edges.isEmpty() && tree.size() < points.length-1){
             currentEdge = (Edge)edges.poll();
             current = currentEdge.getSecondPoint();
             if(current.getFrom() != -1){

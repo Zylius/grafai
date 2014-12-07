@@ -83,12 +83,13 @@ public class ShortestEdgeMap extends AbstractMap
         createAllEdges();
     }
 
+
     @Override
     public void generateTree(int startingPoint) {
         Edge current;
         boolean good;
         int counter = 0;
-        while(!edges.isEmpty()){// && counter < points.length-1){
+        while(!edges.isEmpty() && counter < points.length-1){
             good = false;
             current = (Edge)edges.poll();
             int curVal = -1;
