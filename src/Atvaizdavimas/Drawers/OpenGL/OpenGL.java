@@ -17,6 +17,7 @@ import Intefaces.IMap;
 import com.jogamp.opengl.math.Matrix4;
 import com.jogamp.opengl.math.VectorUtil;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.awt.TextRenderer;
 
 @SuppressWarnings("serial")
 public class OpenGL extends GLCanvas implements GLEventListener, IDrawer {
@@ -27,7 +28,9 @@ public class OpenGL extends GLCanvas implements GLEventListener, IDrawer {
     float distance = (float)30.0;
     private float viewRotX = 20.0f;
     private float viewRotY = 30.0f;
+    private boolean drawText = false;
     IMap map;
+    TextRenderer textRenderer = new TextRenderer(new Font("CourierNew", Font.ITALIC, 12));
 
     public OpenGL()
     {
@@ -80,32 +83,74 @@ public class OpenGL extends GLCanvas implements GLEventListener, IDrawer {
         gl.glLoadIdentity();
     }
 
+
     @Override
     public void display(GLAutoDrawable drawable) {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         setCamera(gl, glu);
 
-
-        gl.glColor3f(1.0f, 0.0f, 0.0f);
         for (Edge edge : this.map.returnTree()) {
-            this.drawLine(edge.getFirstPoint(), edge.getSecondPoint(), 0.1, 360);
+            gl.glColor3f(0.0f, 1.0f, 0.0f);
+            this.drawLine(edge.getFirstPoint(), edge.getSecondPoint(), 0.1, 100);
+
+            Point midPoint = new Point(0,
+                    (edge.getFirstPoint().getX() + edge.getSecondPoint().getX())/2,
+                    (edge.getFirstPoint().getY() + edge.getSecondPoint().getY())/2,
+                    (edge.getFirstPoint().getZ() + edge.getSecondPoint().getZ())/2
+            );
+
+            this.drawData(midPoint, (float)ShortestEdgeMap.countDistance(edge.getFirstPoint(), edge.getSecondPoint()));
         }
 
-        gl.glColor4f(0.0f, 1.0f, 0.0f, 0.3f);
+        gl.glColor4f(1.0f, 1.0f, 1.0f, 0.3f);
         for(Point point : this.map.getPoints()){
             for(int anotherPointID : point.getConnection()) {
-                this.drawLine(point, this.map.getPoints()[anotherPointID], 0.05, 360);
+                this.drawLine(point, this.map.getPoints()[anotherPointID], 0.05, 100);
             }
         }
 
         for(Point point : this.map.getPoints()){
             this.drawSphere(0.1f, point, new float[]{1f, 1f, 1f});
+            this.drawData(point, point.getID());
         }
 
+        this.drawFps();
 
         gl.glFlush();
+    }
 
+    public void setDrawText(boolean enabled)
+    {
+        this.drawText = enabled;
+    }
 
+    private void drawData(Point point, float value)
+    {
+        if(!drawText) {
+            return;
+        }
+        textRenderer.begin3DRendering();
+        textRenderer.setSmoothing(true);
+        textRenderer.setUseVertexArrays(false);
+        textRenderer.setColor(1.0f, 0.0f, 0.0f, 1.0f);
+        textRenderer.draw3D(
+                (value==Math.ceil(value)?((Integer)Math.round(value)).toString():String.format("%.2f", value)),
+                point.getX(),
+                point.getY(),
+                point.getZ(),
+                0.03f
+        );
+        textRenderer.end3DRendering();
+    }
+
+    private void drawFps()
+    {
+        textRenderer.beginRendering(this.getWidth(), this.getHeight());
+        textRenderer.setSmoothing(true);
+        textRenderer.setUseVertexArrays(false);
+        textRenderer.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        textRenderer.draw(String.format("FPS: %.2f", animator.getLastFPS()), +16, this.getHeight() - 16);
+        textRenderer.endRendering();
     }
 
     private void drawSphere(float radius, Point point, float[] color)
@@ -117,7 +162,7 @@ public class OpenGL extends GLCanvas implements GLEventListener, IDrawer {
         glu.gluQuadricNormals(sphere, GLU.GLU_FLAT);
         glu.gluQuadricOrientation(sphere, GLU.GLU_OUTSIDE);
         gl.glTranslated(point.getX(), point.getY(), point.getZ());
-        glu.gluSphere(sphere, radius, 100, 100);
+        glu.gluSphere(sphere, radius, 20, 20);
         gl.glPopMatrix();
         glu.gluDeleteQuadric(sphere);
     }
