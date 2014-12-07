@@ -24,6 +24,9 @@ public class ShortestEdgeMap extends AbstractMap
         IntObj(int val){
             value = val;
         }
+        public String toString(){
+            return String.valueOf(value);
+        }
     }
 
     public static double countDistance(Point a, Point b){
@@ -85,9 +88,11 @@ public class ShortestEdgeMap extends AbstractMap
         Edge current;
         boolean good;
         int counter = 0;
-        while(!edges.isEmpty() && counter < points.length-1){
+        while(!edges.isEmpty()){// && counter < points.length-1){
             good = false;
             current = (Edge)edges.poll();
+            int curVal = -1;
+            int tmp = -1;
             if(area[current.getFirstPoint().getID()] == null){
 
                 if(area[current.getSecondPoint().getID()] == null){
@@ -97,19 +102,29 @@ public class ShortestEdgeMap extends AbstractMap
                 }else{
                     area[current.getFirstPoint().getID()] = area[current.getSecondPoint().getID()];
                 }
-
+                //curVal = area[current.getSecondPoint().getID()].value;
                 good = true;
 
             } else if(area[current.getSecondPoint().getID()] == null){
                 area[current.getSecondPoint().getID()] = area[current.getFirstPoint().getID()];
+                curVal = area[current.getFirstPoint().getID()].value;
                 good = true;
             }else if(area[current.getSecondPoint().getID()].value != area[current.getFirstPoint().getID()].value){
+                tmp =  area[current.getSecondPoint().getID()].value;
                 area[current.getSecondPoint().getID()].value =  area[current.getFirstPoint().getID()].value;
+                curVal = area[current.getFirstPoint().getID()].value;
                 good = true;
             }
             if(good){
             //    current.getSecondPoint().setFrom(current.getFirstPoint().getID());
             //    current.getSecondPoint().setDistance(current.getDistance());
+                if(tmp != -1 && curVal != -1) {
+                    for (int z = 0; z < area.length; z++) {
+                        if (area[z] != null && area[z].value == tmp) {
+                            area[z].value = curVal;
+                        }
+                    }
+                }
                 tree.add(current);
                 counter++;
             }

@@ -85,13 +85,20 @@ public class MainForm extends JFrame{
                             System.out.println(String.format("Medzio ilgis dijstra: %4.2f",map.TreeSize()));
                             System.out.print(map);*/
 
+                            IMap defaultMap = new Classes.Map();
                             IMap edgeMap = new ShortestEdgeMap();
+
                             edgeMap.generateMap(numPoints);
+                            defaultMap.setPoints(edgeMap.getPoints());
+
+                            defaultMap.generateTree(0);
                             edgeMap.generateTree(0);
                             edgeMap.returnTree();
                             map = edgeMap;
-                            System.out.println(String.format("Medzio ilgis salinimas: %4.2f",edgeMap.TreeSize()));
                             System.out.print(edgeMap);
+                            System.out.println(String.format("================= %15s: %4.2f =================","Medzio ilgis salinimas", edgeMap.TreeSize()));
+                            System.out.print(defaultMap);
+                            System.out.println(String.format("================= %15s: %4.2f =================","Medzio ilgis Dijkstra", defaultMap.TreeSize()));
 
                             drawButton.setEnabled(true);
 

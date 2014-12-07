@@ -15,6 +15,14 @@ public abstract class AbstractMap implements IMap {
     protected List<Edge> tree;
 
     @Override
+    public void setPoints(Point[] points) {
+        this.points = new Point[points.length];
+        for(int i = 0; i < points.length; i++){
+            this.points[i] = points[i];
+        }
+    }
+
+    @Override
     public List<Edge> returnTree()
     {
         return tree;
@@ -23,8 +31,8 @@ public abstract class AbstractMap implements IMap {
     @Override
     public double TreeSize() {
         double weight = 0.d;
-        for(int i = 0; i < points.length; i++){
-            weight += points[i].getDistance();
+        for (Edge element : tree){
+            weight += element.getDistance();
         }
         return weight;
     }
@@ -135,7 +143,7 @@ public abstract class AbstractMap implements IMap {
 
     @Override
     public String toString() {
-        String gString = "";
+        String gString = "dydis: " + String.valueOf(tree.size()) + "\n";
         for(int i = 0; i < tree.size(); i++){
             gString += tree.get(i).toString() + '\n';
         }

@@ -12,6 +12,21 @@ public class Point {
 	private int[] connection;
 	private boolean inQueue;
 
+    public Point(Point point){
+        this.x = point.x;
+        this.y = point.y;
+        this.z = point.z;
+        this.ID = point.ID;
+        this.distance = point.distance;
+        this.from = point.from;
+        this.inQueue = point.inQueue;
+        this.connection = new int[point.connection.length];
+        for(int i = 0; i < point.connection.length; i++) {
+            this.connection[i] = point.connection[i];
+        }
+
+    }
+
     public Point(int ID, float x, float y, float z, int[] connection){
         this.ID = ID;
         this.x = x;

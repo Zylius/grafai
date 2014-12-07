@@ -13,4 +13,5 @@ public interface IMap {
 	List<Edge> returnTree();
 	double TreeSize();
     Point[] getPoints();
+    void setPoints(Point[] points);
 }
