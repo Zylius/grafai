@@ -94,7 +94,7 @@ public class MainForm extends JFrame{
                         defaultMap.generateTree(0);
                         defaultMap.returnTree();
 
-                        edgeMap.readFromFile(file);
+                        edgeMap.setPoints(defaultMap.getPoints());
                         edgeMap.generateTree(0);
                         edgeMap.returnTree();
 

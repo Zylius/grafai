@@ -83,6 +83,15 @@ public class ShortestEdgeMap extends AbstractMap
         createAllEdges();
     }
 
+    @Override
+    public void setPoints(Point[] points) {
+        this.points = new Point[points.length];
+        for(int i = 0; i < points.length; i++){
+            this.points[i] = points[i];
+        }
+        area = new IntObj[points.length];
+        createAllEdges();
+    }
 
     @Override
     public void generateTree(int startingPoint) {
