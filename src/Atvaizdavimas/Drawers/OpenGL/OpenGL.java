@@ -35,17 +35,22 @@ public class OpenGL extends GLCanvas implements GLEventListener, IDrawer {
     public OpenGL()
     {
         super(getCapabilites());
-        setPreferredSize(new Dimension(1000, 1000));
-        setSize(1000,1000);
+        setPreferredSize(new Dimension(700, 500));
+        setSize(700, 500);
         addGLEventListener(this);
 
-        this.window = new Window(this);
+        //this.window = new Window(this);
 
         animator = new FPSAnimator(this, 60);
         animator.start();
         animator.setUpdateFPSFrames(3, null);
 
         glu = new GLU();
+    }
+
+    public OpenGL getCanvas()
+    {
+        return this;
     }
 
     private static GLCapabilities getCapabilites()

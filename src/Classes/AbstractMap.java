@@ -38,7 +38,7 @@ public abstract class AbstractMap implements IMap {
     }
 
     @Override
-    public void readFromFile(File file) {
+    public boolean readFromFile(File file) {
         // TODO Auto-generated method stub
         try {
             Scanner fileScanner = new Scanner(file);
@@ -49,20 +49,43 @@ public abstract class AbstractMap implements IMap {
                 pointNumber++;
             }
 
+            if(pointNumber < 2 && pointNumber > 1000)
+            {
+                // permazas arba perdidelis tasku skaicius
+                return false;
+            }
+
             int i = 0;
             Point[] points = new Point[pointNumber];
             while (fileScanner.hasNext()) {
                 String line = fileScanner.nextLine();
                 System.out.println(line);
-                int x, y, z;
+                Float x, y, z;
                 String[] values = line.split(" ");
                 int[] connections = new int[values.length - 3];
-                x = Integer.parseInt(values[0]);
-                y = Integer.parseInt(values[1]);
-                z = Integer.parseInt(values[2]);
+                x = Float.parseFloat(values[0]);
+                y = Float.parseFloat(values[1]);
+                z = Float.parseFloat(values[2]);
                 int k = 0;
+                if(x < 0 || x > 10 || y < 0 || y > 10 || z < 0 || z > 10)
+                {
+                    // reiksmes netelpa o rezius
+                    return false;
+                }
+
+                if(values.length < 4)
+                {
+                    // taskas nesijungia su kitais taskais
+                    return false;
+                }
+
                 for (int j = 3; j < values.length; j++) {
                     connections[k] = Integer.parseInt(values[j]);
+                    if(connections[k] > pointNumber)
+                    {
+                        // tokio tasko nera
+                        return false;
+                    }
                     k++;
                 }
 
@@ -74,6 +97,8 @@ public abstract class AbstractMap implements IMap {
             fileScanner2.close();
 
             this.points = points;
+
+            return true;
         }
         catch (Exception ex)
         {
@@ -82,6 +107,8 @@ public abstract class AbstractMap implements IMap {
                 System.out.println("File not found");
             if(ex instanceof NumberFormatException)
                 System.out.println("Wrong file data");
+
+            return false;
         }
 
     }

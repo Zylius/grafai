@@ -2,6 +2,7 @@ package Gui;
 
 import Atvaizdavimas.Controller.Mouse;
 import Atvaizdavimas.Drawers.OpenGL.OpenGL;
+import Classes.Map;
 import Classes.Point;
 import Classes.ShortestEdgeMap;
 import Intefaces.IMap;
@@ -21,8 +22,17 @@ public class MainForm extends JFrame{
     private JButton loadButton;
     private JButton generateButton;
     private JPanel MainPanel;
+    private JTextField pointNumberField;
+    private JLabel loadErrorText;
+    private JLabel generateErrorText;
+    private JComboBox algorithmBox;
+    private JLabel algorithmLabel;
+    private JPanel OpenGLPanel;
+    private JDesktopPane desktopPane;
+    private IMap defaultMap = new Map();
+    private IMap edgeMap = new ShortestEdgeMap();
 
-    private IMap map = new Classes.Map();
+    private IMap map;
 
     public MainForm(){
         super("Grafai");
@@ -31,12 +41,35 @@ public class MainForm extends JFrame{
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        generateErrorText.setVisible(false);
+        loadErrorText.setVisible(false);
+
         // graph drawing
         drawButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                String selectedAlgorithm = algorithmBox.getSelectedItem().toString();
+
+                if(selectedAlgorithm.equals("Kriskal"))
+                {
+                    map = defaultMap;
+
+                    System.out.print(defaultMap);
+                    System.out.println(String.format("================= %15s: %4.2f =================", "Medzio ilgis Dijkstra", defaultMap.TreeSize()));
+                }
+                else if(selectedAlgorithm.equals("Prim"))
+                {
+                    map = edgeMap;
+
+                    System.out.print(edgeMap);
+                    System.out.println(String.format("================= %15s: %4.2f =================","Medzio ilgis salinimas", edgeMap.TreeSize()));
+                }
+
                 OpenGL drawer = new OpenGL();
                 drawer.setMap(map);
+                desktopPane.removeAll();
+                addGraph(drawer.getCanvas());
                 new Mouse(drawer);
             }
         });
@@ -50,13 +83,29 @@ public class MainForm extends JFrame{
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
+                    boolean noError;
 
-                    map.readFromFile(file);
-                    map.generateTree(0);
-                    map.returnTree();
-                    System.out.print(map);
+                    defaultMap = new Map();
+                    edgeMap = new ShortestEdgeMap();
 
-                    drawButton.setEnabled(true);
+                    noError = defaultMap.readFromFile(file);
+
+                    if(noError){
+                        defaultMap.generateTree(0);
+                        defaultMap.returnTree();
+
+                        edgeMap.readFromFile(file);
+                        edgeMap.generateTree(0);
+                        edgeMap.returnTree();
+
+                        drawButton.setEnabled(true);
+                        loadErrorText.setVisible(false);
+                    }
+                    else
+                    {
+                        loadErrorText.setVisible(true);
+                        drawButton.setEnabled(false);
+                    }
                 }
             }
         });
@@ -65,63 +114,43 @@ public class MainForm extends JFrame{
         generateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    int numPoints = Integer.parseInt(pointNumberField.getText());
+                    defaultMap = new Map();
+                    edgeMap = new ShortestEdgeMap();
 
-                final GenerateForm generateForm = new GenerateForm();
-                Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-                generateForm.setLocation((int)((screen.getWidth() - generateForm.getWidth()) / 2), (int)((screen.getHeight() - generateForm.getHeight()) / 2));
-                generateForm.generateButton.addActionListener(new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            int numPoints = Integer.parseInt(generateForm.pointNumField.getText());
-                            int displayWidth = Integer.parseInt(generateForm.displayWidthField.getText());
-                            int displayHeight = Integer.parseInt(generateForm.displayHeightField.getText());
+                    defaultMap.generateMap(numPoints);
+                    defaultMap.generateTree(0);
+                    defaultMap.returnTree();
 
-                            System.out.println("Testas");
+                    edgeMap.setPoints(defaultMap.getPoints());
+                    //edgeMap.generateMap(numPoints);
+                    edgeMap.generateTree(0);
+                    edgeMap.returnTree();
 
-                            /*map.generateMap(numPoints);
-                            map.generateTree(0);
-                            map.returnTree();
-                            System.out.println(String.format("Medzio ilgis dijstra: %4.2f",map.TreeSize()));
-                            System.out.print(map);*/
+                    drawButton.setEnabled(true);
+                    generateErrorText.setVisible(false);
 
-                            IMap defaultMap = new Classes.Map();
-                            IMap edgeMap = new ShortestEdgeMap();
-
-                            edgeMap.generateMap(numPoints);
-                            defaultMap.setPoints(edgeMap.getPoints());
-
-                            defaultMap.generateTree(0);
-                            edgeMap.generateTree(0);
-                            edgeMap.returnTree();
-                            map = edgeMap;
-                            System.out.print(edgeMap);
-                            System.out.println(String.format("================= %15s: %4.2f =================","Medzio ilgis salinimas", edgeMap.TreeSize()));
-                            System.out.print(defaultMap);
-                            System.out.println(String.format("================= %15s: %4.2f =================","Medzio ilgis Dijkstra", defaultMap.TreeSize()));
-
-                            drawButton.setEnabled(true);
-
-                            generateForm.closeFrame();
-
-                        } catch (NumberFormatException name)
-                        {
-                            generateForm.errorText.setVisible(true);
-                        }
-
-                    }
-                });
+                } catch (NumberFormatException name)
+                {
+                    generateErrorText.setVisible(true);
+                    drawButton.setEnabled(false);
+                }
             }
         });
 
         setVisible(true);
     }
 
-    public void ReadFromFile(){
-
-    }
-
-    public void addGraph(OpenGL canvas){
-        MainPanel.add(canvas, BorderLayout.CENTER);
+    public void addGraph(OpenGL canvas)
+    {
+        final JInternalFrame Frame = new JInternalFrame();
+        Frame.setVisible(true);
+        Frame.setSize(710, 500);
+        Frame.setLocation(-5,-28);
+        Frame.setTitle("Grafas");
+        Frame.add(canvas, BorderLayout.CENTER);
+        Frame.setVisible(true);
+        desktopPane.add(Frame);
     }
 }

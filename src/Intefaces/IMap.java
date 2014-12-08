@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IMap {
 	void generateMap(final int size);
-	void readFromFile(File file);
+	boolean readFromFile(File file);
 	void generateTree(int startingPoint);
 	List<Edge> returnTree();
 	double TreeSize();
